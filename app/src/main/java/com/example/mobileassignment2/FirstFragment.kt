@@ -1,23 +1,38 @@
 package com.example.mobileassignment2
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.android.volley.DefaultRetryPolicy
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonArrayRequest
 import com.example.mobileassignment2.databinding.FragmentFirstBinding
+import my.edu.tarc.mycontact.WebDB
+import org.json.JSONArray
+import org.json.JSONObject
+import java.net.UnknownHostException
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : Fragment() {
+class FirstFragment : Fragment(), RecordClickListener   {
 
     private var _binding: FragmentFirstBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    //Refer to the View Model created by the Main Activity
+    val myPlaceViewModel : PlaceViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,12 +44,83 @@ class FirstFragment : Fragment() {
 
     }
 
+    override fun onRecordClickListener(index: Int) {
+        //update the slected index
+        myPlaceViewModel.selectedIndex = index
+        //findNavController().navigate(R.id.nav_second)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val adapter = PlaceAdapter(this)
+
+        //Add an observer
+        myPlaceViewModel.placeList.observe(
+            viewLifecycleOwner,
+            Observer {
+//                if(it.isEmpty()){
+//                    binding.textViewCount.isVisible = true
+//                    binding.textViewCount.text =
+//                        getString(R.string.no_record)
+//                }else{
+//                    binding.textViewCount.isVisible = false
+//                }
+                adapter.setPlace(it)
+            }
+        )
 
         binding.buttonFirst.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
+        binding.placesContainer.adapter = adapter
+    }
+
+    fun downloadPlace(context: Context, url: String){
+        val jsonObjectRequest = JsonArrayRequest(
+            Request.Method.GET, url, null,
+            { response ->
+                // Process the JSON
+                try {
+                    if (response != null) {
+                        val jsonArray: JSONArray = response
+                        val size: Int = jsonArray.length()
+
+                        if(myPlaceViewModel.placeList.value?.isNotEmpty()!!){
+                            myPlaceViewModel.deleteAll()
+                        }
+
+                        for (i in 0..size - 1) {
+                            var jsonContact: JSONObject = jsonArray.getJSONObject(i)
+                            var place = Place(
+                                jsonContact.getString("vicinity"),
+                                jsonContact.getString("name"),
+                                jsonContact.getString("date_expired")
+                            )
+                            myPlaceViewModel.addContact(Place(place?.vicinity!!, place?.name!!, place?.date_expired!! ))
+                        }
+                        Toast.makeText(context, "$size record(s) downloaded", Toast.LENGTH_SHORT).show()
+                    }
+                }catch (e: UnknownHostException){
+                    Log.d("ContactRepository", "Unknown Host: %s".format(e.message.toString()))
+                }
+                catch (e: Exception) {
+                    Log.d("ContactRepository", "Response: %s".format(e.message.toString()))
+                }
+            },
+            { error ->
+                Log.d("ContactRepository", "Error Response: %s".format(error.message.toString()))
+            },
+        )
+
+        //Volley request policy, only one time request
+        jsonObjectRequest.retryPolicy = DefaultRetryPolicy(
+            DefaultRetryPolicy.DEFAULT_TIMEOUT_MS,
+            0, //no retry
+            1f
+        )
+
+        // Access the RequestQueue through your singleton class.
+        WebDB.getInstance(context).addToRequestQueue(jsonObjectRequest)
     }
 
     override fun onDestroyView() {
