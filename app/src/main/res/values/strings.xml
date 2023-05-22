@@ -11,6 +11,30 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <string name="name">Name</string>
+    <string name="phone">Phone</string>
     <string name="vicinity">Vicinity</string>
     <string name="date_expired">Date Expired</string>
+
+    <string name="save">Save</string>
+    <string name="add">Add</string>
+    <string name="edit">Edit</string>
+    <string name="profile_saved">Profile Saved</string>
+    <string name="profile_error">Error Saving Profile</string>
+
+    <string name="action_upload">Upload</string>
+    <string name="action_download">Download</string>
+    <string name="action_delete">Delete</string>
+
+    <string name="place_saved">Place Saved</string>
+    <string name="place_not_saved">Place not Saved</string>
+    <string name="place_error">Place Is Empty</string>
+    <string name="place_uploaded">Place Uploaded</string>
+    <string name="no_record">No record</string>
+
+    <string name="exit_message">Are you sure you want to exit?</string>
+    <string name="delete_message">Delete this place?</string>
+    <string name="alert_yes">Yes</string>
+    <string name="alert_no">No</string>
+    <string name="exit">Exit</string>
+    <string name="cancel">Cancel</string>
 </resources>

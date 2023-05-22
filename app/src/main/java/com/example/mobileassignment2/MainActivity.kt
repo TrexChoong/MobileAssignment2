@@ -9,6 +9,9 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import com.example.mobileassignment2.databinding.ActivityMainBinding
 
@@ -34,10 +37,43 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        // hide fab, change title
+        navController.addOnDestinationChangedListener{
+                _,destination,_->
+            if(destination.id==R.id.nav_settings)
+            {
+                title = getString(R.string.action_settings)
+                binding.fab.visibility = View.INVISIBLE
+            }else if(destination.id == R.id.SecondFragment){//add mode
+                if(placeViewModel.selectedIndex == -1){
+                    title = getString(R.string.add)
+                }else{//edit mode
+                    title = getString(R.string.edit)
+                }
+                binding.fab.visibility = View.INVISIBLE
+            }else{
+                title = getString(R.string.app_name)
+                binding.fab.visibility = View.VISIBLE
+            }
         }
+        binding.fab.setOnClickListener { view ->
+            findNavController(R.id.nav_host_fragment_content_main).navigate(R.id.action_FirstFragment_to_SecondFragment)
+        }
+
+        //back press
+        val backPressedCallback = object: OnBackPressedCallback(true)
+        {
+            override fun handleOnBackPressed()
+            {
+                val builder = AlertDialog.Builder(this@MainActivity)
+                builder.setMessage(getString(R.string.exit_message))
+                    .setPositiveButton(getString(R.string.exit),{_,_ -> finish() })
+                    .setNegativeButton(getString(R.string.cancel),{_,_ ->  })
+
+                builder.create().show()
+            }
+        }
+        onBackPressedDispatcher.addCallback(backPressedCallback)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -1,14 +1,16 @@
 package com.example.mobileassignment2
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.volley.DefaultRetryPolicy
@@ -23,7 +25,7 @@ import java.net.UnknownHostException
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : Fragment(), RecordClickListener   {
+class FirstFragment : Fragment(), MenuProvider, RecordClickListener   {
 
     private var _binding: FragmentFirstBinding? = null
 
@@ -40,6 +42,9 @@ class FirstFragment : Fragment(), RecordClickListener   {
     ): View? {
 
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
+        val menuHost: MenuHost = this.requireActivity()
+        menuHost.addMenuProvider(this, viewLifecycleOwner,
+            Lifecycle.State.RESUMED)
         return binding.root
 
     }
@@ -68,6 +73,9 @@ class FirstFragment : Fragment(), RecordClickListener   {
                 adapter.setPlace(it)
             }
         )
+
+        //delete all to test download
+            //myPlaceViewModel.deleteAll()
 
         binding.buttonFirst.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
@@ -121,6 +129,29 @@ class FirstFragment : Fragment(), RecordClickListener   {
 
         // Access the RequestQueue through your singleton class.
         WebDB.getInstance(context).addToRequestQueue(jsonObjectRequest)
+    }
+
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        //DO NOTHING HERE
+    }
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        if(menuItem.itemId == R.id.action_upload){
+//            //TODO upload contact list to firebase realtime DB
+//            val sharedPreferences: SharedPreferences = requireActivity().getPreferences(
+//                Context.MODE_PRIVATE)
+//            val id = sharedPreferences.getString(
+//                getString(R.string.name),"")
+//
+//            if(id.isNullOrEmpty()){
+//                Toast.makeText(context, getString(R.string.place_error), Toast.LENGTH_SHORT).show()
+//            }else{
+                myPlaceViewModel.uploadContact(myPlaceViewModel.toJson())
+                //Toast.makeText(context, getString(R.string.place_uploaded), Toast.LENGTH_SHORT).show()
+           // }
+        } else if (menuItem.itemId == R.id.action_download){
+            downloadPlace(requireContext(),"https://findmyrahmah-e29bf-default-rtdb.asia-southeast1.firebasedatabase.app/.json")        }
+        return true
     }
 
     override fun onDestroyView() {

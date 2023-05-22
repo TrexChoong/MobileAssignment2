@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.launch
 
 class PlaceViewModel (application: Application): AndroidViewModel(application) {
@@ -34,7 +35,17 @@ class PlaceViewModel (application: Application): AndroidViewModel(application) {
         repository.update(place)
     }
 
-//    fun uploadContact(id: String) {
-//        repository.uploadPlace(id)
-//    }
+    fun uploadContact(id: String) = viewModelScope.launch {
+        repository.uploadPlace(id)
+    }
+    fun toJson(): String {
+        val mapper = ObjectMapper()
+        val writer = mapper.writerWithDefaultPrettyPrinter()
+
+        return try {
+            writer.writeValueAsString(this)
+        } catch (e: Exception) {
+            throw RuntimeException(e)
+        }
+    }
 }

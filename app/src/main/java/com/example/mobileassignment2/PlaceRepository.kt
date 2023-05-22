@@ -30,14 +30,14 @@ class PlaceRepository(private val placeDao: PlaceDao){
         placeDao.deleteAll()
     }
 
-//    fun uploadPlace(id: String){
-//        if(allPlaces.isInitialized){
-//            if(!allPlaces.value.isNullOrEmpty()){
-//                val database = Firebase.database("https://findmyrahmah-e29bf-default-rtdb.asia-southeast1.firebasedatabase.app/").reference
-//                allPlaces.value!!.forEach{
-//                    database.child(id).child(it.vicinity).setValue(it)
-//                }
-//            }
-//        }
-//    }
+    fun uploadPlace(id: String){
+        if(allPlaces.isInitialized){
+            if(!allPlaces.value.isNullOrEmpty()){
+                val database = Firebase.database("https://findmyrahmah-e29bf-default-rtdb.asia-southeast1.firebasedatabase.app/").reference
+                allPlaces.value!!.forEach{
+                    database.child(id).child(it.vicinity).setValue(it)
+                }
+            }
+        }
+    }
 }
