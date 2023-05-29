@@ -52,7 +52,7 @@ class FirstFragment : Fragment(), MenuProvider, RecordClickListener   {
     override fun onRecordClickListener(index: Int) {
         //update the slected index
         myPlaceViewModel.selectedIndex = index
-        //findNavController().navigate(R.id.nav_second)
+        findNavController().navigate(R.id.SecondFragment)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -146,7 +146,7 @@ class FirstFragment : Fragment(), MenuProvider, RecordClickListener   {
 //            if(id.isNullOrEmpty()){
 //                Toast.makeText(context, getString(R.string.place_error), Toast.LENGTH_SHORT).show()
 //            }else{
-                myPlaceViewModel.uploadContact(myPlaceViewModel.toJson())
+                myPlaceViewModel.uploadContact("test string")
                 //Toast.makeText(context, getString(R.string.place_uploaded), Toast.LENGTH_SHORT).show()
            // }
         } else if (menuItem.itemId == R.id.action_download){

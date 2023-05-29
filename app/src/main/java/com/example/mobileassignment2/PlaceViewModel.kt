@@ -38,14 +38,4 @@ class PlaceViewModel (application: Application): AndroidViewModel(application) {
     fun uploadContact(id: String) = viewModelScope.launch {
         repository.uploadPlace(id)
     }
-    fun toJson(): String {
-        val mapper = ObjectMapper()
-        val writer = mapper.writerWithDefaultPrettyPrinter()
-
-        return try {
-            writer.writeValueAsString(this)
-        } catch (e: Exception) {
-            throw RuntimeException(e)
-        }
-    }
 }

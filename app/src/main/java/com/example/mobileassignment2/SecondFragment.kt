@@ -53,9 +53,16 @@ class SecondFragment : Fragment(), MenuProvider {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        super.onViewCreated(view, savedInstanceState)
 
-        //downloadContact(requireActivity(), getString(R.string.url_server)+getString(R.string.url_get_all))
-        //downloadPlace(requireContext(),"https://findmyrahmah-e29bf-default-rtdb.asia-southeast1.firebasedatabase.app/.json")
+        //Determine the mode of this fragment
+        if(myPlaceViewModel.selectedIndex != -1){// edit mode
+            var contact = myPlaceViewModel.placeList.value!!.get(myPlaceViewModel.selectedIndex)
+            binding.editTextName.setText(contact.name)
+            binding.editTextVicinity.setText(contact.vicinity)
+            binding.editTextVicinity.requestFocus()
+            binding.editTextName.isEnabled = false
+        }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -72,12 +79,14 @@ class SecondFragment : Fragment(), MenuProvider {
             binding.apply {
                 val name = editTextName.text.toString()
                 val vicinity = editTextVicinity.text.toString()
-                val dummyDate = "2024-02-21 12:10:18.043+00:00"
-                val newPlace = Place(name, vicinity, dummyDate)
+                val dummyDate = "2024-02-21 12:10:18+00:00"
+                val newPlace = Place(vicinity, name, dummyDate)
                 if(myPlaceViewModel.selectedIndex == -1){ //add mode
+                    Log.d("add output:", newPlace.toString())
                     myPlaceViewModel.addContact(newPlace)
                 }else{ // edit mode
                     myPlaceViewModel.updateContact(newPlace)
+                    Log.d("edit output:", newPlace.toString())
                 }
             }
             Toast.makeText(context, getString(R.string.place_saved), Toast.LENGTH_SHORT).show()
@@ -103,6 +112,7 @@ class SecondFragment : Fragment(), MenuProvider {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        myPlaceViewModel.selectedIndex = -1
         _binding = null
     }
 }

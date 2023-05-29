@@ -31,11 +31,16 @@ class PlaceRepository(private val placeDao: PlaceDao){
     }
 
     fun uploadPlace(id: String){
+        var counter = 0;
         if(allPlaces.isInitialized){
             if(!allPlaces.value.isNullOrEmpty()){
-                val database = Firebase.database("https://findmyrahmah-e29bf-default-rtdb.asia-southeast1.firebasedatabase.app/").reference
+                val database = Firebase.database("https://findmyrahmah-e29bf-default-rtdb.asia-southeast1.firebasedaFapp/").reference
+                val dummyDate = "2024-02-21 12:10:18+00:00"
                 allPlaces.value!!.forEach{
-                    database.child(id).child(it.vicinity).setValue(it)
+                    database.child(counter.toString()).setValue(it)
+//                    database.child(counter.toString()).child(it.name).setValue(it)
+//                    database.child(counter.toString()).child(it.date_expired).setValue(dummyDate)
+                    counter++
                 }
             }
         }
